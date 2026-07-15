@@ -20,6 +20,12 @@
 # production
 /build
 
+# local learning material and generated artifacts
+/data/*
+!/data/.gitkeep
+/output/*
+!/output/.gitkeep
+
 # misc
 .DS_Store
 *.pem

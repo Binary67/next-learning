@@ -5,6 +5,7 @@ import {
   learningRequestSchema,
   type LearningResponse,
 } from "@/lib/learning/contracts";
+import { loadLearningMaterial } from "@/lib/learning/material";
 
 const invalidRequestResponse = () =>
   Response.json({ error: "Invalid request body." }, { status: 400 });
@@ -25,8 +26,10 @@ export async function POST(request: Request) {
   }
 
   try {
+    const learningMaterial = await loadLearningMaterial();
     const result = await getLearningAgent().invoke({
       messages: [new HumanMessage(requestResult.data.message)],
+      learningMaterial,
     });
     const lastAssistantMessage = result.messages.findLast(isAIMessage);
 
