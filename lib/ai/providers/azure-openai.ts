@@ -2,6 +2,9 @@ import "server-only";
 
 import type { BaseChatModel } from "@langchain/core/language_models/chat_models";
 import { ChatOpenAI } from "@langchain/openai";
+import { config } from "dotenv";
+
+config({ override: true, quiet: true });
 
 function requiredEnv(name: string): string {
   const value = process.env[name];
