@@ -1,11 +1,5 @@
-import { HumanMessage, isAIMessage } from "@langchain/core/messages";
-
-import { getLearningAgent } from "@/lib/ai/runtime/learning-agent";
-import {
-  learningRequestSchema,
-  type LearningResponse,
-} from "@/lib/learning/contracts";
-import { loadLearningMaterial } from "@/lib/learning/material";
+import { runLearningWorkflow } from "@/lib/ai/runtime/learning-workflow";
+import { learningRequestSchema } from "@/lib/learning/contracts";
 
 const invalidRequestResponse = () =>
   Response.json({ error: "Invalid request body." }, { status: 400 });
@@ -26,21 +20,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const learningMaterial = await loadLearningMaterial();
-    const result = await getLearningAgent().invoke({
-      messages: [new HumanMessage(requestResult.data.message)],
-      learningMaterial,
-    });
-    const lastAssistantMessage = result.messages.findLast(isAIMessage);
-
-    if (!lastAssistantMessage) {
-      throw new Error("The learning agent did not return an assistant message.");
-    }
-
-    const response: LearningResponse = {
-      message: lastAssistantMessage.text,
-      conceptMap: result.conceptMap ?? null,
-    };
+    const response = await runLearningWorkflow(requestResult.data.message);
 
     return Response.json(response);
   } catch {
